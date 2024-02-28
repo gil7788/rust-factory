@@ -1,3 +1,8 @@
+mod to_do;
+use to_do::ItemTypes;
+use to_do::to_do_factory;
+use to_do::structs::traits::create::Create;
+
 use rand::prelude::*;
 use std::env;
 
@@ -49,10 +54,7 @@ fn check_binary_environment() {
     }
 }
 
-fn main() {
-    check_binary_environment();
-    println!("Hello, world!");
-
+fn generate_number() {
     // Generate and print a random number
     let mut rng: ThreadRng = rand::thread_rng();
     let r: f64 = generate_float(&mut rng);
@@ -61,4 +63,28 @@ fn main() {
     // Print command-line arguments
     let args: Vec<String> = env::args().collect();
     println!("Args: {:?}", args);
+}
+
+fn main() {
+    check_binary_environment();
+    println!("Hello, world!");
+    generate_number();
+
+    let to_do: ItemTypes = to_do_factory("pending", "make").unwrap();
+    match to_do {
+        ItemTypes::Pending(p) => {
+            println!("Pending item: {}", p.super_struct.title);
+        }
+        ItemTypes::Done(d) => {
+            println!("Done item: {}", d.super_struct.title);
+        }
+    }
+    let washing_to_do: ItemTypes = to_do_factory("pending", "washing").unwrap();
+    match washing_to_do {
+        ItemTypes::Pending(item) => item.create(
+            &item.super_struct.title),
+        ItemTypes::Done(item) => println!(
+            "it's a done item with the title: {}",
+            item.super_struct.title)
+    }
 }
